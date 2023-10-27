@@ -1,0 +1,60 @@
+
+############## Image Build ##### Docker push
+docker image build -t rfd13/eshopweb-dev:0.6 --file ./src/Web/Dockerfile .  
+docker image build -t rfd13/eshopapi-dev:0.4 --file ./src/PublicApi/Dockerfile .          
+
+docker push rfd13/eshopweb-dev:0.5
+docker push rfd13/eshopapi-dev:0.4  
+
+
+docker container run -d -p 5106:-80 --env "ConnectionStrings__CatalogConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.CatalogDb;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" -e "ConnectionStrings__IdentityConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.Identity;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" eshopweb:0.1
+
+
+docker container run -d -p 5200:5200 --env "ConnectionStrings__CatalogConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.CatalogDb;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" -e "ConnectionStrings__IdentityConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.Identity;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" eshopapi:0.1
+
+
+docker run --name eshopweb --rm -d -p 5106:80 --env "ConnectionStrings__CatalogConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.CatalogDb;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" -e "ConnectionStrings__IdentityConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.Identity;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" eshopweb:0.1
+
+
+
+docker container run -d -p 5200:80 --env "ConnectionStrings__CatalogConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.CatalogDb;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" -e "ConnectionStrings__IdentityConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.Identity;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" eshopapi:0.1
+
+
+
+
+##################################### DEVELOPMENT
+
+docker container run -d -p 5106:80 -e "ConnectionStrings__CatalogConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.CatalogDb;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" -e "ConnectionStrings__IdentityConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.Identity;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" -e "baseUrls__apiBase=http://localhost:5099/api/" -e "baseUrls__webBase=http://host.docker.internal:5106/" eshopweb-dev:0.1
+
+docker container run -d -p 5099:80 -e "ConnectionStrings__CatalogConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.CatalogDb;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" -e "ConnectionStrings__IdentityConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.Identity;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" -e "baseUrls__apiBase=http://localhost:5099/api/" -e "baseUrls__webBase=http://host.docker.internal:5106/" eshopapi-dev:0.1
+
+### -e "baseUrls__apiBase=http://localhost:5200/api/" -e "baseUrls__webBase=http://host.docker.internal:5106/"
+### -e "ASPNETCORE_ENVIRONMENT=Docker" 
+
+
+  "baseUrls": {
+    "apiBase": "http://localhost:5200/api/",
+    "webBase": "http://host.docker.internal:5106/"
+  },
+
+
+
+
+
+##################################### DEVELOPMENT WITH CORS
+
+docker container run -d -p 5106:80 az eshopweb-dev:0.2
+
+docker container run -d -p 5099:80 -e "ConnectionStrings__CatalogConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.CatalogDb;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" -e "ConnectionStrings__IdentityConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.Identity;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" -e "baseUrls__apiBase=http://localhost:5099/api/" -e "baseUrls__webBase=http://host.docker.internal:5106/" -e "CorsOrigins=http://localhost:5099,http://host.docker.internal:5106/" eshopapi-dev:0.2
+
+
+
+  -e "CorsOrigins=http://localhost:5099,http://host.docker.internal:5106/"
+
+##################################### DOCKER
+
+
+docker container run -d -p 5106:80 -e "ConnectionStrings__CatalogConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.CatalogDb;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" -e "ConnectionStrings__IdentityConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.Identity;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" eshopweb-docker:0.1 
+
+
+docker container run -d -p 5200:80 -e "ConnectionStrings__CatalogConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.CatalogDb;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" -e "ConnectionStrings__IdentityConnection=Server=host.docker.internal,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.Identity;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" eshopapi-docker:0.1

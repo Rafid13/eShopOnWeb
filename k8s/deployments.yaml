@@ -1,0 +1,93 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eshop-db
+spec:
+  selector:
+    matchLabels:
+      app: eshop-db
+  template:
+    metadata:
+      labels:
+        app: eshop-db
+    spec:
+      containers:
+      - name: eshop-db
+        image: mcr.microsoft.com/azure-sql-edge
+        env: 
+          - name: SA_PASSWORD
+            value: someThingComplicated1234
+          - name: ACCEPT_EULA
+            value: 'Y'
+        ports:
+        - containerPort: 1433
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eshop-web
+spec:
+  selector:
+    matchLabels:
+      app: eshop-web
+  template:
+    metadata:
+      labels:
+        app: eshop-web
+    spec:
+      containers:
+      - name: eshop-web
+        image: rfd13/eshopweb-dev:0.7
+        env:
+        - name: ConnectionStrings__CatalogConnection
+          value: Server=eshop-db-svc.default.svc.cluster.local,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.CatalogDb;User Id=sa;Password=someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;
+        - name: ConnectionStrings__IdentityConnection
+          value: Server=eshop-db-svc.default.svc.cluster.local,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.Identity;User Id=sa;Password=someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true; 
+        - name: baseUrls__apiBase
+          value: http://eshop-api-svc.default.svc.cluster.local:5099/api/  
+        - name: baseUrls__webBase
+          value: http://eshop-web-svc.default.svc.cluster.local:5106
+        - name: CorsOrigins
+          value: http://eshop-api-svc.default.svc.cluster.local:5099,http://eshop-web-svc.default.svc.cluster.local:5106/
+
+        ports:
+        - containerPort: 80
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eshop-api
+spec:
+  selector:
+    matchLabels:
+      app: eshop-api
+  template:
+    metadata:
+      labels:
+        app: eshop-api
+    spec:
+      containers:
+      - name: eshop-api
+        image: rfd13/eshopapi-dev:0.4
+        env:
+          - name: "ConnectionStrings__CatalogConnection"
+            value: "Server=eshop-db-svc.default.svc.cluster.local,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.CatalogDb;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" 
+          - name: "ConnectionStrings__IdentityConnection"
+            value: "Server=eshop-db-svc.default.svc.cluster.local,1433;Integrated Security=true;Initial Catalog=Microsoft.eShopOnWeb.Identity;User Id=sa;Password=@someThingComplicated1234;Trusted_Connection=false;TrustServerCertificate=true;" 
+          - name: baseUrls__apiBase
+            value: http://eshop-api-svc.default.svc.cluster.local:5099/api/ 
+          - name: baseUrls__webBase
+            value: http://eshop-web-svc.default.svc.cluster.local:5106
+          - name: CorsOrigins
+            value: http://eshop-api-svc.default.svc.cluster.local:5099,http://eshop-web-svc.default.svc.cluster.local:5106/
+        ports:
+        - containerPort: 80
+
+
+
+
+

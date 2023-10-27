@@ -22,4 +22,7 @@ RUN dotnet publish "./PublicApi.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+ENV ASPNETCORE_ENVIRONMENT Development
+# ENV ASPNETCORE_ENVIRONMENT Docker
+
 ENTRYPOINT ["dotnet", "PublicApi.dll"]

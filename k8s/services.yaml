@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: eshop-web-svc
+spec:
+  selector:
+    app: eshop-web
+  ports:
+  - port: 5106
+    targetPort: 80
+    nodePort: 31000
+  type: NodePort
+  
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: eshop-api-svc
+spec:
+  selector:
+    app: eshop-api
+  ports:
+  - port: 5099
+    targetPort: 80
+  # type: NodePort
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: eshop-db-svc
+spec:
+  selector:
+    app: eshop-db
+  ports:
+  - port: 1433
+    targetPort: 1433
+  # type: NodePort
